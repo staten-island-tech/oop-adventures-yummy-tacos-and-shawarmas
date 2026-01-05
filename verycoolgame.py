@@ -38,7 +38,7 @@ def armor(self):
         if self.__hunger > 7:
           print("eat a lot")
 
-def food(self):
+def HealingPotion(self):
     print(f"feeding {self.name}")
     if self.__hunger < 4:
         print(self.name, "kinda eating")
@@ -58,7 +58,7 @@ def food(self):
         if self.__hunger > 7:
           print("eat a lot")
 
-def food(self):
+def gun(self):
     print(f"feeding {self.name}")
     if self.__hunger < 4:
         print(self.name, "kinda eating")
@@ -78,7 +78,7 @@ def food(self):
         if self.__hunger > 7:
           print("eat a lot")
 
-def food(self):
+def sword(self):
     print(f"feeding {self.name}")
     if self.__hunger < 4:
         print(self.name, "kinda eating")
