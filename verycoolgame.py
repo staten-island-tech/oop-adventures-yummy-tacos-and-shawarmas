@@ -17,8 +17,10 @@ class Hero:
 
 RandomHero = Hero("Player_Choice", 50, 100, 100, 100, 100, 100, 5, [], 10)
 
+RandomHero.name = input("What would you like to name you brave adventurer? Don't worry, the name is not permanent and could be changed later on.")
 
 def health(self):
+
         
         
     if RandomHero.hunger <= 0:
