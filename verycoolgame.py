@@ -49,7 +49,7 @@ while True:
 
     elif RandomHero.strength <= 0:
         RandomHero.damage -= 2
-        print("Your muscles feel very weak and are aching. Your low strenth starts to decrease your damage. Fight monsters or go to the gym to get more strength.")
+        print("Your muscles feel very weak and are aching. Your low strength starts to decrease your damage. Fight monsters or go to the gym to get more strength.")
         break
 
 print(RandomHero.__dict__)
