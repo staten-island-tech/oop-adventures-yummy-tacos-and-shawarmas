@@ -84,14 +84,14 @@ def Weights(self):
 def Sword(self):
     print(f"Sword given to {self.name}")
     if self.__strength < 4:
-        print(self.name, "is now protected")
+        print(self.name, "gains a sword")
         self._change_strength(3)
-        self._change_stamina(-1)
+        self._change_damage(-1)
     elif self.__strength < 7:
-        print(self.name, "is now Protected")
+        print(self.name, "gains a sword")
         self._change_strength(4)
-        self._change_stamina(-1)
+        self._change_damage(-1)
     else:
-        print(self.name, "is now Protected")
+        print(self.name, "gains a sword")
         self._change_health(4)
-        self._change_stamina(-1)
+        self._change_damage(-1)
