@@ -13,6 +13,9 @@ class Hero:
         self.inventory = inventory
         self.speed = speed
         self.damage = damage
+    
+    def is_alive(self):
+        return self.health 
 
 RandomHero = Hero("Player_Choice", 50, 100, 100, 100, 100, 100, 5, [], 10, 10)
 RandomHero.name = input("What would you like to name your brave adventurer? Don't worry about your choice, it can be changed later.")
