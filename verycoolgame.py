@@ -1,59 +1,62 @@
 import random
 
-class Hero:
-    def __init__(self, name, money, health, sleep, hunger, thirst, stamina, strength, inventory, speed, damage):
+class Character:
+    def __init__(self, name, health, stamina, strength, speed, damage):
         self.name = name
-        self.money = money
         self.health = health
-        self.sleep = sleep
-        self.hunger = hunger
-        self.thirst = thirst
         self.stamina = stamina
         self.strength = strength
-        self.inventory = inventory
         self.speed = speed
         self.damage = damage
     
     def is_alive(self):
-        return self.health 
-
-RandomHero = Hero("Player_Choice", 50, 100, 100, 100, 100, 100, 5, [], 10, 10)
-RandomHero.name = input("What would you like to name your brave adventurer? Don't worry about your choice, it can be changed later.")
-
-while True:
-
-    if RandomHero.hunger <= 0:
-        RandomHero.health -= random.randint(5, 10)
-        print("You're getting very hungry. Your stomach growls and starts eating itself. Eat something quick before you start to wither away.")
-        break
-
-    elif RandomHero.thirst <= 0:
-        RandomHero.health -= random.randint(5, 10)
-        print("You are dehydrated. Drink something or else you will start to take damage.")
-        break
-
-    elif RandomHero.sleep <= 0:
-        RandomHero.health -= random.randint(5, 10)
-        print("You need sleep because you keep pulling all-nighters. Rest now or you will lose health.")
-        break
-
-    elif RandomHero.health <= 0:
-        print("Your health has fully depleated. You can no longer move and fall to the ground and die. GAME OVER!")
-        quit()
+        return self.health > 0
     
-    elif RandomHero.money <= 0:
-        print("You should go fight monsters to get some money. Or you could sell some items in the store for money.")
-        break
 
-    elif RandomHero.stamina <= 0:
-        RandomHero.speed -= 3
-        print("You feel very tired after walking for too long. You start to become slower while trying to walk. Go to the gym to get more stamina.")
-        break
+class Hero(Character):
+    def __init__(self, name):
+        super().__init__(name, 100, 100, 5, 10, 10)
+        self.money = 50
+        self.hunger = 100
+        self.thirst = 100
+        self.sleep = 100
+        self.inventory = []
+    
+    def eat(self, item):
+        self.hunger = min(100, self.hunger + item.effect)
+        print(f"You eat {item.name}. Your hunger was restored.")
 
-    elif RandomHero.strength <= 0:
-        RandomHero.damage -= 2
-        print("Your muscles feel very weak and are aching. Your low strength starts to decrease your damage. Fight monsters or go to the gym to get more strength.")
-        break
+    def drink(self, item):
+        self.thirst = min(100, self.thirst + item.effect)
+        print(f"You drink {item.name}. Your thirst was restored.")
 
-print(RandomHero.__dict__)
+    def show_stats(self):
+        print("\n    HERO STATS    ")
+        for stat, value in self.__dict__.items():
+            print(f"{stat}: {value}")
 
+class Item:
+    def __init__(self, name, effect, item_type):
+        self.name = name
+        self.effect = effect
+        self.type = item_type
+
+    def __str__(self):
+        return f"{self.name} (+{self.effect} {self.type})"
+    
+    def __repr__(self):
+        return self.__str__()
+    
+class Game:
+    def __init__(self):
+        name = input("What would you like to name your beautiful adventurer? Don't worry about your choice, it can be changed later.")
+        self.hero = Hero(name)
+        self.running = True
+
+    def stat_decay(self):
+        self.hero.hunger -= random.randint(1, 5)
+        self.hero.thirst -= random.randint(1, 5)
+        self.hero.sleep -= random.randint(1, 3)
+
+        if self.hero.hunger <= 0:
+            self.hero.health -= random.randint(5,10)
