@@ -29,7 +29,6 @@ def Weights(self):
     print(self.name, "Starts lifting")
     self._change__strength(20)
 
-
 def Sword(self):
     print(f"Sword given to {self.name}")
     print(self.name, "gains a sword")
