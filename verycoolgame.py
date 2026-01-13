@@ -92,7 +92,7 @@ class Game:
         if self.hero.is_alive():
             reward = random.randint(20, 30)
             self.hero.money += reward
-            print(f"You defeated the {enemy} and earned ${reward}!")
+            print(f"You defeated the {enemy.name} and earned ${reward}!")
         else:
             print(f"You were defeated by the {enemy}. GAME OVER!")
             self.running = False
