@@ -2,41 +2,71 @@ def food(self):
     print(f"Food given to {self.name}")
     print(self.name, "starts eating")
     self._change_hunger(30)
+    self._change_hunger(30)
 
 def armor(self):
     print(f"Armor given to {self.name}")
     print(self.name, "is now protected")
     self._change_health(30)
     self._change_stamina(-5)
+    self._change_hunger(30)
 
 def water(self):
     print(f"water given to {self.name}")
     print(self.name, "is drinking")
     self._change_thirst(20)
+    self._change_hunger(30)
 
 def HealingPotion(self):
     print(f"healing potion given to {self.name}")
     print(self.name, "is now healing")
     self._change_health(30)
+    self._change_hunger(30)
 
 def SpeedPotion(self):
     print(f"Speed Potion given to {self.name}")
     print(self.name, "gains a speed boost")
     self._change_speed(25)
+    self._change_hunger(30)
 
 def Weights(self):
     print(f"Weights given to {self.name}")
     print(self.name, "Starts lifting")
     self._change__strength(20)
+    self._change_hunger(30)
 
 def Sword(self):
     print(f"Sword given to {self.name}")
-    print(self.name, "became even more stronger")
+    print(self.name, "became more stronger")
     self._change_strength(10)
     self._change_damage(30)
+    self._change_hunger(30)
 
 def Better_Sword(self):
     print(f"the better sword given to {self.name}")
     print(self.name, "became even more stronger")
     self._change_strength(20)
     self._change_damage(30)
+    self._change_hunger(30)
+
+print(" ")
+
+print("")
+print("What would you like to buy?:")
+print("Feed")
+print("Play")
+print("Rest")
+print("Death")
+
+action = input("Pick: ")
+
+if action.lower() == "feed":
+    hero.feed()
+elif action.lower() == "play":
+    hero.play()
+elif action.lower() == "rest":
+    hero.rest()
+elif action.lower() == "death":
+    print("your pet is dead")
+else:
+    print("it doesnt work")
