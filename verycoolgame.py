@@ -31,6 +31,12 @@ def Weights(self):
 
 def Sword(self):
     print(f"Sword given to {self.name}")
-    print(self.name, "gains a sword")
+    print(self.name, "became even more stronger")
     self._change_strength(10)
+    self._change_damage(30)
+
+def Better_Sword(self):
+    print(f"the better sword given to {self.name}")
+    print(self.name, "became even more stronger")
+    self._change_strength(20)
     self._change_damage(30)
