@@ -31,7 +31,7 @@ class Hero(Character):
         print(f"You drink {item.name}. Your thirst was restored.")
 
     def show_stats(self):
-        print("\n    HERO STATS    ")
+        print("\n>>> HERO STATS <<<")
         for stat, value in self.__dict__.items():
             print(f"{stat}: {value}")
 
@@ -65,21 +65,26 @@ class Game:
         self.running = True
 
     def stat_decay(self):
-        self.hero.hunger -= random.randint(1, 3)
-        self.hero.thirst -= random.randint(1, 3)
-        self.hero.sleep -= random.randint(1, 3)
+        self.hero.hunger = max(0, self.hero.hunger - random.randint(1, 3))
+        self.hero.thirst = max(0, self.hero.thirst - random.randint(1, 3))
+        self.hero.sleep = max(0, self.hero.sleep - random.randint(1, 3))
 
-        if self.hero.hunger <= 0:
+        if self.hero.hunger == 0:
             self.hero.health -= random.randint(5,10)
             print(f"You are starving! Please eat something or your health will decrease.")
 
-        if self.hero.thirst <= 0:
+        if self.hero.thirst == 0:
             self.hero.health -= random.randint(5,10)
             print(f"You are dehydrated! Please drink something or your health will decrease.")
 
-        if self.hero.sleep <= 0:
+        if self.hero.sleep == 0:
             self.hero.health -= random.randint(5,10)
             print(f"You are extremely tired! Please rest or your health will decrease.")
+    
+    def health_regen(self):
+        if self.hero.hunger >= 60 and self.hero.thirst >= 60 and self.hero.sleep >= 60 and self.hero.health <= 97:
+            self.hero.health += 3
+    
         
     def fight(self):
         enemy = NPC("Wild Boar")
@@ -99,7 +104,7 @@ class Game:
 
     def find_item(self):
         food1 = Item("Apple", 20, "food")
-        food2 = Item("Mule Dung", -5, "food")
+        food2 = Item("Dung", -5, "food")
         food3 = Item("Wild Berry", 10, "food")
         food4 = Item("Mushroom", 30, "food")
         food5 = Item("Durian", 25, "food")
@@ -138,17 +143,36 @@ class Game:
             self.hero.eat(item)
         elif item.type == "drink":
             self.hero.drink(item)
+    
+    def rest(self):
+        if self.hero.sleep >= 90 and self.hero.sleep <= 100:
+            self.hero.sleep += 2
+            print("You took a very short nap. You only restored 2 sleep since you were already very energized.")
+        if self.hero.sleep >= 50 and self.hero.sleep <= 89:
+            self.hero.sleep += 5
+            print("You took a longer nap to really rest your head. You restore 5 sleep and feel a lot better.")
+        if self.hero.sleep >= 25 and self.hero.sleep <= 49:
+            self.hero.sleep += 10
+            print("You took half the day off and went to sleep. You restore 10 sleep and feel very good.")
+        if self.hero.sleep >= 10 and self.hero.sleep <= 24:
+            self.hero.sleep += 20
+            print("You took the whole day off and had very proper rest. You restore 20 sleep and are ready for the day.")
+        if self.hero.sleep >= 0 and self.hero.sleep <= 9:
+            self.hero.sleep += 30
+            print("You take multiple days off to really fix your sleep schedule. You restore 30 sleep and have fixed your horrible schedule.")
 
     def game_loop(self):
         while self.running and self.hero.is_alive():
             self.stat_decay()
+            self.health_regen()
             self.hero.show_stats()
         
             print("\nChoose an action:")
             print("1) Fight Monster")
             print("2) Scavenge")
             print("3) Use Item")
-            print("4) QUIT GAME")
+            print("4) Rest")
+            print("5) QUIT GAME")
 
             choice = input("> ")
 
@@ -159,12 +183,15 @@ class Game:
             elif choice == "3":
                 self.use_item()
             elif choice == "4":
+                self.rest()
+            elif choice == "5":
                 print("Thanks for playing!")
                 self.running = False
             else:
                 print("Invalid choice.")
 
-        print("You collapsed and died. GAME OVER!")
+        print(f"You collapsed and died. GAME OVER! Your final stats are:{self.hero.show_stats()}")
+        print(self.hero.show_stats())
 
 
 if __name__ == "__main__":
