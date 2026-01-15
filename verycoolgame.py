@@ -139,7 +139,7 @@ class Game:
             self.hero.money += reward
             print(f"You defeated the {enemy.name} and earned ${reward}!")
         else:
-            print(f"You were defeated by the {enemy}. GAME OVER!")
+            print(f"You were defeated by the {enemy.name}. GAME OVER!")
             self.running = False
 
     def find_item(self):
