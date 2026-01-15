@@ -12,39 +12,71 @@ class Character:
     def is_alive(self):
         return self.health > 0
     
+    def update_combat_stats(self):
+        self.damage = 5 + self.strength
+        self.speed = 5 + (self.stamina // 20)
+    
 
 class Hero(Character):
     def __init__(self, name):
         super().__init__(name, 100, 100, 5, 10, 10)
         self.money = 50
+        self.max_health = 100
         self.hunger = 100
         self.thirst = 100
         self.sleep = 100
         self.inventory = []
+
+        self.update_combat_stats()
+
+    def apply_poison(self, chance, source):
+        if random.random() < chance:
+            self.health -= 20
+            print(f"You were poisoned by the {source}! You lose 20 health.")
     
     def eat(self, item):
         self.hunger = min(100, self.hunger + item.effect)
         print(f"You eat {item.name}. Your hunger was restored.")
 
+        if item.name == "Wild Berry":
+            self.apply_poison(0.1, "Wild Berry")
+        elif item.name == "Mushroom":
+            self.apply_poison(0.25, "Mushroom")
+
     def drink(self, item):
         self.thirst = min(100, self.thirst + item.effect)
         print(f"You drink {item.name}. Your thirst was restored.")
 
+        if item.name == "River Water":
+            self.apply_poison(0.5, "River Water")
+
     def show_stats(self):
         print("\n>>> HERO STATS <<<")
         for stat, value in self.__dict__.items():
-            print(f"{stat}: {value}")
+            if stat == "inventory":
+                print("inventory:")
+                if not value:
+                    print("  (empty)")
+                else:
+                    for item in value[:6]:
+                        print(f"  - {item.name}")
+                    if len(value) > 6:
+                        print(f"  ...and {len(value) - 6} more items")
+            else:
+                print(f"{stat}: {value}")
 
 class NPC(Character):
     def __init__(self, name):
         super().__init__(
             name,
-            health=random.randint(30, 60),
-            stamina=50,
-            strength=random.randint(1, 4),
-            speed=7,
-            damage=random.randint(1, 5)
+            health=random.randint(20, 40),
+            stamina=40,
+            strength=random.randint(1, 3),
+            speed=5,
+            damage=random.randint(1, 3)
         )
+        
+        self.update_combat_stats()
 
 class Item:
     def __init__(self, name, effect, item_type):
@@ -82,12 +114,20 @@ class Game:
             print(f"You are extremely tired! Please rest or your health will decrease.")
     
     def health_regen(self):
-        if self.hero.hunger >= 60 and self.hero.thirst >= 60 and self.hero.sleep >= 60 and self.hero.health <= 97:
+        if self.hero.hunger >= 50 and self.hero.thirst >= 50 and self.hero.sleep >= 50 and self.hero.health <= 97:
             self.hero.health += 3
     
         
     def fight(self):
-        enemy = NPC("Wild Boar")
+        monsters = [
+        "Wild Boar",
+        "Wolf",
+        "Goblin",
+        "Bandit",
+        "Giant Spider"
+    ]
+
+        enemy = NPC(random.choice(monsters))
         print(f"\nA {enemy.name} appears!")
 
         while enemy.is_alive() and self.hero.is_alive():
@@ -117,13 +157,41 @@ class Game:
         self.hero.inventory.append(found)
         print(f"You found a {found.name}!")
 
+    def open_inventory(self):
+        if not self.hero.inventory:
+            print("\nYour inventory is empty.")
+            return
+
+        print("\n>>> INVENTORY <<<")
+
+        for i, item in enumerate(self.hero.inventory):
+            print(f"\n{i + 1}. {item.name}")
+            print(f"   Type: {item.type}")
+            print(f"   Stat Gain: +{item.effect}")
+
+            if item.name == "Wild Berry":
+                print("   Effect: 10% chance to poison (-20 health)")
+            elif item.name == "Mushroom":
+                print("   Effect: 25% chance to poison (-20 health)")
+            elif item.name == "River Water":
+                print("   Effect: 50% chance to poison (-20 health)")
+            elif item.name == "Dung":
+                print("   Effect: Disgusting. Lowers hunger.")
+            elif item.name == "Blood":
+                print("   Effect: Why? Gives thirst, but at what cost?")
+            else:
+                print("   Effect: None")
+
     def use_item(self):
         if not self.hero.inventory:
             print("Your inventory is empty.")
             return
 
+        print("\n>>> USE ITEM <<<")
+
         for i, item in enumerate(self.hero.inventory):
-            print(f"{i + 1}. {item.name}")
+            sign = "+" if item.effect >= 0 else ""
+            print(f"{i + 1}. {item.name} ({item.type}, {sign}{item.effect})")
 
         choice = input("Choose an item to use: ")
 
@@ -160,6 +228,105 @@ class Game:
         if self.hero.sleep >= 0 and self.hero.sleep <= 9:
             self.hero.sleep += 30
             print("You take multiple days off to really fix your sleep schedule. You restore 30 sleep and have fixed your horrible schedule.")
+    
+    def go_to_gym(self):
+        print("\n WELCOME TO THE DIAMOND GYM ")
+        print("1) Dumbbells (+2 Strength, -10 Stamina)")
+        print("2) Treadmill (+15 Stamina)")
+        print("3) Barbell (+3 Strength, -15 Stamina)")
+        print("4) Exit Gym")
+
+        choice = input("> ")
+
+        if choice == "1" and self.hero.stamina >= 10:
+            self.hero.strength += 2
+            self.hero.stamina -= 10
+            print("You lift dumbbells. Strength increased!")
+
+        elif choice == "2":
+            self.hero.stamina = min(100, self.hero.stamina + 15)
+            print("You run on the treadmill. Stamina increased!")
+
+        elif choice == "3" and self.hero.stamina >= 15:
+            self.hero.strength += 3
+            self.hero.stamina -= 15
+            print("You lift the barbell. Strength increased significantly!")
+
+        elif choice == "4":
+            return
+        else:
+            print("You are too tired or made an invalid choice.")
+            return
+
+        self.hero.update_combat_stats()
+
+    def walk_forward(self):
+        print("\nYou walk forward...")
+
+        roll = random.random()
+
+        if roll < 0.25:
+            monsters = ["Wolf", "Goblin", "Bandit", "Giant Spider", "Wild Boar"]
+            enemy = NPC(random.choice(monsters))
+            print(f"A {enemy.name} attacks!")
+
+            dodge_chance = min(0.5, self.hero.speed * 0.03)
+
+            if random.random() < dodge_chance:
+                print("You dodge the attack because you are too fast!")
+                return
+
+            print("You fail to dodge and must fight!")
+
+            while enemy.is_alive() and self.hero.is_alive():
+                enemy.health -= self.hero.damage
+                self.hero.health -= enemy.damage
+
+        elif roll < 0.35:
+            print("You find a chest.")
+            if random.random() < 0.75:
+                print("The chest is empty.")
+            else:
+                potion = random.choice(["strength", "stamina", "health"])
+                if potion == "strength":
+                    self.hero.strength += 10
+                    print("Potion of Strength! +10 Strength")
+                elif potion == "stamina":
+                    self.hero.stamina = min(100, self.hero.stamina + 50)
+                    print("Potion of Endurance! +50 Stamina")
+                else:
+                    self.hero.max_health += 10
+                    self.hero.health += 10
+                    print("Potion of Vitality! +10 Max Health")
+
+                self.hero.update_combat_stats()
+        else:
+            print("Nothing happens.")
+    
+    def discard_item(self):
+        if not self.hero.inventory:
+            print("Your inventory is empty. Nothing to discard.")
+            return
+
+        print("\nChoose an item to discard:")
+
+        for i, item in enumerate(self.hero.inventory):
+            print(f"{i + 1}. {item.name}")
+
+        choice = input("> ")
+
+        if not choice.isdigit():
+            print("Invalid choice.")
+            return
+
+        choice = int(choice) - 1
+
+        if choice < 0 or choice >= len(self.hero.inventory):
+            print("Invalid choice.")
+            return
+
+        removed_item = self.hero.inventory.pop(choice)
+        print(f"You discarded {removed_item.name}.")
 
     def game_loop(self):
         while self.running and self.hero.is_alive():
@@ -170,9 +337,13 @@ class Game:
             print("\nChoose an action:")
             print("1) Fight Monster")
             print("2) Scavenge")
-            print("3) Use Item")
-            print("4) Rest")
-            print("5) QUIT GAME")
+            print("3) Open Inventory")
+            print("4) Use Item")
+            print("5) Discard Item")
+            print("6) Rest")
+            print("7) Go to Gym")
+            print("8) Walk Forward")
+            print("9) QUIT GAME")
 
             choice = input("> ")
 
@@ -181,17 +352,25 @@ class Game:
             elif choice == "2":
                 self.find_item()
             elif choice == "3":
+                self.open_inventory()
+            elif choice =="4":
                 self.use_item()
-            elif choice == "4":
-                self.rest()
             elif choice == "5":
+                self.discard_item()
+            elif choice == "6":
+                self.rest()
+            elif choice == "7":
+                self.go_to_gym()
+            elif choice == "8":
+                self.walk_forward()
+            elif choice == "9":
                 print("Thanks for playing!")
                 self.running = False
             else:
                 print("Invalid choice.")
 
-        print(f"You collapsed and died. GAME OVER! Your final stats are:{self.hero.show_stats()}")
-        print(self.hero.show_stats())
+        print("\nYou collapsed and died. GAME OVER! Your final stats were:")
+        self.hero.show_stats()
 
 
 if __name__ == "__main__":
